@@ -132,7 +132,7 @@ EXECUTION_DIR = Path(RELATIVE_DIR).parents[0]
 METADATA_CACHE_PATH = os.environ.get("METADATA_CACHE_PATH", "/tmp/autopkg_metadata.json")
 REPORT_PLIST_PATH = "/tmp/autopkg.plist"
 SLACK_WEBHOOK = os.environ.get("SLACK_WEBHOOK_TOKEN", None)
-ENV_RECIPES_DIR = "recipes"
+ENV_RECIPES_DIR = os.environ.get("RECIPES_DIR_NAME", None)
 # Glob for AutoPkg PLIST that may have RECIPE_SEARCH_DIRS for us to read
 AUTOPKG_PLIST = glob("/Users/**/Library/Preferences/com.github.autopkg.plist")
 

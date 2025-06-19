@@ -1,0 +1,22 @@
+Identifier: com.github.autopkg.wardsparadox.munki.Ghostty
+Description: "Downloads the latest version of Ghostty and imports it into Munki."
+Comment: "Created with Recipe Robot v2.3.1 (https://github.com/homebysix/recipe-robot)"
+
+Input:
+  MUNKI_REPO_SUBDIR: "apps/%NAME%"
+  NAME: Ghostty
+  pkginfo:
+    catalogs:
+      - testing
+    description: Ghostty is a fast, feature-rich, and cross-platform terminal emulator that uses platform-native UI and GPU acceleration.
+    developer: Mitchell Hashimoto
+    display_name: Ghostty
+    name: "%NAME%"
+    unattended_install: true
+MinimumVersion: "2.3"
+ParentRecipe: com.github.autopkg.wardsparadox.download.Ghostty
+Process:
+  - Processor: MunkiImporter
+    Arguments:
+      pkg_path: "%RECIPE_CACHE_DIR%/Ghostty-%version%.dmg"
+      repo_subdirectory: "%MUNKI_REPO_SUBDIR%"
