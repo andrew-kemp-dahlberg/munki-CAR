@@ -150,6 +150,7 @@ for key in ["RECIPE_OVERRIDE_DIRS", "RECIPE_REPOS", "RECIPE_SEARCH_DIRS"]:
     dirs = AUTOPKG_PREFS.get(key, [])
     if dirs:
         RECIPE_SEARCH_ORDER.extend(dirs if isinstance(dirs, list) else [dirs])
+        log.debug(f"Found {key} in AutoPkg plist: {dirs}")
 
 ### debugging ###
 
