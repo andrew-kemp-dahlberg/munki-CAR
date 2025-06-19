@@ -116,11 +116,6 @@ jobs:
         # # Search for specific recipes
         # autopkg list-recipes | grep -i "ghostty\|visualstudio"
 
-    # - name: Add AutoPkg repos
-    #   run: |
-    #     for repo in $(cat repo_list.txt); do autopkg repo-add "$repo"; done
-
-
     - name: Run makecatalogs
       run: |
         /usr/local/munki/makecatalogs munki_repo
