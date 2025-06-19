@@ -1,4 +1,4 @@
 [
   "com.github.autopkg.wardsparadox.munki.Ghostty.recipe.yaml",
-  "com.github.valdore86.munki.visualstudiocode.recipe.yaml"
+  "com.github.valdore86.munki.visualstudiocode.recipe"
 ]
