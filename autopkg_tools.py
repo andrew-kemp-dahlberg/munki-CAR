@@ -143,14 +143,16 @@ AUTOPKG_PLIST = glob("/Users/**/Library/Preferences/com.github.autopkg.plist")
 # Changed by Andrew to make it fit our cd environment
 # Replace all the variable definitions with:
 AUTOPKG_PREFS = _plist_pal(AUTOPKG_PLIST[0])
+log.info(f"Found AutoPkg plist at {AUTOPKG_PLIST[0]}")
 
+# Set RECIPE_SEARCH_DIRS to the value defined in AutoPkg plist
 # Build search order: overrides → repos → recipes
 RECIPE_SEARCH_ORDER = []
 for key in ["RECIPE_OVERRIDE_DIRS", "RECIPE_REPOS", "RECIPE_SEARCH_DIRS"]:
     dirs = AUTOPKG_PREFS.get(key, [])
     if dirs:
         RECIPE_SEARCH_ORDER.extend(dirs if isinstance(dirs, list) else [dirs])
-        log.debug(f"Found {key} in AutoPkg plist: {dirs}")
+        log.info(f"Found {key} in AutoPkg plist: {dirs}")
 
 ### debugging ###
 
