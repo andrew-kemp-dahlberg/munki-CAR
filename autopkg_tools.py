@@ -139,6 +139,9 @@ AUTOPKG_PLIST = glob("/Users/**/Library/Preferences/com.github.autopkg.plist")
 RECIPES_DIR = (
     f"/tmp/{ENV_RECIPES_DIR}" if ENV_RECIPES_DIR is not None else _plist_pal(AUTOPKG_PLIST[0]).get("RECIPE_SEARCH_DIRS")
 )
+### debugging ###
+print(RECIPES_DIR)
+####
 RECIPE_TO_RUN = os.environ.get("RECIPE", None)
 
 #############################
