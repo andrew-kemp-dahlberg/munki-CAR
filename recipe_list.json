@@ -1,4 +1,4 @@
 [
-"Ghostty.munki.recipe.yaml",
-"VisualStudioCode.munki.recipe"
+  "Ghostty.munki",
+  "VisualStudioCode.munki"
 ]
