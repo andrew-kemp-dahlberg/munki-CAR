@@ -91,7 +91,7 @@ jobs:
         export RECIPES_DIR_NAME="${RECIPES_DIR_NAME}"
         
         # From Andrew
-        defaults write com.github.autopkg RECIPE_SEARCH_DIRS "${RECIPES_DIR_NAME}"
+        defaults write com.github.autopkg RECIPE_SEARCH_DIRS "$(pwd)"/"${RECIPES_DIR_NAME}"
 
         #code from Gusto
         defaults write com.github.autopkg RECIPE_OVERRIDE_DIRS "$(pwd)"/overrides/
@@ -112,9 +112,8 @@ jobs:
 
     - name: Add AutoPkg repos
       run: |
-        #for repo in $(cat repo_list.txt); do autopkg repo-add "$repo"; done
-        autopkg repo-add autopkg/wardsparadox-recipes
-        autopkg repo-add autopkg/valdore86-recipes
+        for repo in $(cat repo_list.txt); do autopkg repo-add "$repo"; done
+
 
     - name: Run makecatalogs
       run: |
