@@ -135,15 +135,10 @@ SLACK_WEBHOOK = os.environ.get("SLACK_WEBHOOK_TOKEN", None)
 ENV_RECIPES_DIR = os.environ.get("RECIPES_DIR_NAME", None)
 # Glob for AutoPkg PLIST that may have RECIPE_SEARCH_DIRS for us to read
 AUTOPKG_PLIST = glob("/Users/**/Library/Preferences/com.github.autopkg.plist")
-
 # If no ENV defined, set to value defined in AutoPkg plist
-
 RECIPES_DIR = (
-
     f"/tmp/{ENV_RECIPES_DIR}" if ENV_RECIPES_DIR is not None else _plist_pal(AUTOPKG_PLIST[0]).get("RECIPE_SEARCH_DIRS")
-
 )
-
 RECIPE_TO_RUN = os.environ.get("RECIPE", None)
 
 #############################
