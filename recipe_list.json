@@ -1,4 +1,4 @@
 [
-  "Ghostty.munki",
-  "VisualStudioCode.munki"
+  "com.github.autopkg.wardsparadox.munki.Ghostty",
+  "com.github.valdore86.munki.visualstudiocode"
 ]
