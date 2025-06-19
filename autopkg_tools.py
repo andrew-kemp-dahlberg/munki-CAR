@@ -136,11 +136,23 @@ ENV_RECIPES_DIR = os.environ.get("RECIPES_DIR_NAME", None)
 # Glob for AutoPkg PLIST that may have RECIPE_SEARCH_DIRS for us to read
 AUTOPKG_PLIST = glob("/Users/**/Library/Preferences/com.github.autopkg.plist")
 # If no ENV defined, set to value defined in AutoPkg plist
-RECIPES_DIR = (
-    f"/tmp/{ENV_RECIPES_DIR}" if ENV_RECIPES_DIR is not None else _plist_pal(AUTOPKG_PLIST[0]).get("RECIPE_SEARCH_DIRS")
-)
+# RECIPES_DIR = (
+#     f"/tmp/{ENV_RECIPES_DIR}" if ENV_RECIPES_DIR is not None else _plist_pal(AUTOPKG_PLIST[0]).get("RECIPE_SEARCH_DIRS")
+# )
+
+# Changed by Andrew to make it fit our cd environment
+# Replace all the variable definitions with:
+AUTOPKG_PREFS = _plist_pal(AUTOPKG_PLIST[0])
+
+# Build search order: overrides → repos → recipes
+RECIPE_SEARCH_ORDER = []
+for key in ["RECIPE_OVERRIDE_DIRS", "RECIPE_REPOS", "RECIPE_SEARCH_DIRS"]:
+    dirs = AUTOPKG_PREFS.get(key, [])
+    if dirs:
+        RECIPE_SEARCH_ORDER.extend(dirs if isinstance(dirs, list) else [dirs])
+
 ### debugging ###
-print(RECIPES_DIR)
+
 ####
 RECIPE_TO_RUN = os.environ.get("RECIPE", None)
 
@@ -344,9 +356,34 @@ class Recipe:
     """Object to interact with AutoPkg recipe"""
 
     def __init__(self, path):
+        # try:
+        #     self.recipe_name = path
+        #     self.path = next(iter(glob(f"{RECIPES_DIR}/**/{self.recipe_name}", recursive=True)))
+        #     self.success = False
+        #     self.error = False
+        #     self.results = {}
+        #     self._keys = None
+        #     self._has_run = False
+
+        # except StopIteration:
+        #     log.error(f"Could not locate {self.recipe_name}")
+        #     self.error = True
+        #     return None
+        ####### Edited by Andrew #######
+        ####### This will allow us to use multiple directories for recipes and function the way autopkg normally does #######
         try:
             self.recipe_name = path
-            self.path = next(iter(glob(f"{RECIPES_DIR}/**/{self.recipe_name}", recursive=True)))
+            
+            # Find first matching recipe in search order
+            self.path = next(
+                (match for location in RECIPE_SEARCH_ORDER 
+                 for match in glob(f"{location}/**/{self.recipe_name}", recursive=True)),
+                None
+            )
+            
+            if not self.path:
+                raise StopIteration(f"Recipe {self.recipe_name} not found")
+            
             self.success = False
             self.error = False
             self.results = {}
@@ -357,6 +394,7 @@ class Recipe:
             log.error(f"Could not locate {self.recipe_name}")
             self.error = True
             return None
+
 
     @property
     def plist(self):
