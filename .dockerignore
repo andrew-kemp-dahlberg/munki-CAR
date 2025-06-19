@@ -1,9 +1,0 @@
-README.md
-LICENSE
-build.zsh
-codebase/anka_install_create_clone.zsh
-Dockerfile
-autopkg-runner-results
-
-# Git files
-.git.*
