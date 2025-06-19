@@ -69,6 +69,27 @@ jobs:
 
     - name: Configure AutoPkg and Git
       run: |
+        config_abs_path="$GITHUB_WORKSPACE"/config.json
+
+        #Code from build.zsh in Kandji's CARL
+        
+        SLACK_NOTIFY=$(plutil -extract slack_notify raw -o - "${config_abs_path}" 2>/dev/null)
+        RECIPES_DIR=$(plutil -extract local_autopkg_recipes_dir raw -o - "${config_abs_path}" 2>/dev/null)
+
+        # Override Slack webhook if notify is set to false
+        if [[ ! ${SLACK_NOTIFY} == true ]]; then
+            # Re-set var and export for downstream execs
+            SLACK_WEBHOOK_TOKEN=""
+            export SLACK_WEBHOOK_TOKEN=""
+        fi
+
+        # Get folder name of recipes (will be placed in /tmp on remote VM)
+        RECIPES_DIR_NAME=$(basename "${RECIPES_DIR}")
+        # Re-set var and export for downstream execs
+        RECIPES_DIR_NAME="${RECIPES_DIR_NAME}"
+        export RECIPES_DIR_NAME="${RECIPES_DIR_NAME}"
+        
+        #code from Gusto
         defaults write com.github.autopkg RECIPE_OVERRIDE_DIRS "$(pwd)"/overrides/
         defaults write com.github.autopkg RECIPE_REPO_DIR "$(pwd)"/repos/
         defaults write com.github.autopkg FAIL_RECIPES_WITHOUT_TRUST_INFO -bool YES
@@ -87,6 +108,7 @@ jobs:
 
     - name: Run AutoPkg
       run: |
+
         python3 autopkg_tools.py -l recipe_list.json
         if [ -f pull_request_title ]; then
         echo "TITLE=$(cat pull_request_title)" >> $GITHUB_ENV
