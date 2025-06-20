@@ -1,5 +1,5 @@
 {
   "host_runtime": "local",
   "local_autopkg_recipes_dir": "./recipes",
-  "slack_notify": false
+  "slack_notify": true
 }
