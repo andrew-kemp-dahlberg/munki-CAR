@@ -43,6 +43,7 @@
 
 import argparse
 import json
+import yaml
 import logging
 import os
 import platform
@@ -420,9 +421,16 @@ class Recipe:
     @property
     def plist(self):
         if self._keys is None:
-            with open(self.path, "rb") as f:
-                self._keys = plistlib.load(f)
-
+            # Andrew - Added YAML support
+            # Check if it's a YAML file
+            if self.path.endswith('.yaml') or self.path.endswith('.yml'):
+                with open(self.path, "r") as f:
+                    self._keys = yaml.safe_load(f)
+            else:
+                # It's a plist file
+                with open(self.path, "rb") as f:
+                    self._keys = plistlib.load(f)
+        
         return self._keys
 
     @property
