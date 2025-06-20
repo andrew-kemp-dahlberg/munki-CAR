@@ -383,7 +383,17 @@ class Recipe:
                  for match in glob(f"{location}/**/{self.recipe_name}", recursive=True)),
                 None
             )
-            
+
+            ##### some claude ish cuz i'm too tired
+            if not self.path:
+            # Try searching by recipe identifier pattern
+                recipe_filename = self.recipe_name.split('.')[-2] + '.' + self.recipe_name.split('.')[-1]
+                self.path = next(
+                    (match for location in RECIPE_SEARCH_ORDER 
+                    for match in glob(f"{location}/**/{recipe_filename}", recursive=True)),
+                    None
+                )
+                
             if not self.path:
                 raise StopIteration(f"Recipe {self.recipe_name} not found")
             
