@@ -376,6 +376,9 @@ class Recipe:
         ####### This will allow us to use multiple directories for recipes and function the way autopkg normally does #######
         try:
             self.recipe_name = path
+
+            ### added by andrew
+            log.debug(f"Looking for recipe {self.recipe_name} in search order: {RECIPE_SEARCH_ORDER}")
             
             # Find first matching recipe in search order
             self.path = next(
