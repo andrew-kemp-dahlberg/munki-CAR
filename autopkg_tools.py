@@ -241,7 +241,7 @@ def create_file_and_attributes(attributes_dict):
 
             try:
                 cache_path, cache_filename = os.path.split(pathname)
-                log.debug(f"Found previous cache path {cache_path}")
+                log.info(f"Found previous cache path {cache_path}")
                 # Grab home dir shortname between Users and Library
                 target_home_dir = cache_path[cache_path.find("/Users/") + len("/Users/") : cache_path.rfind("/Library")]
                 exitc, console_user = _run_command("/usr/bin/stat -f%Su /dev/console")
@@ -383,9 +383,11 @@ class Recipe:
             # Find first matching recipe in search order
             self.path = next(
                 (match for location in RECIPE_SEARCH_ORDER 
-                 for match in glob(f"{location}/**/{self.recipe_name}", recursive=True)),
+                 for match in glob(f"{location}/**/{self.recipe_name}", recursive=True)
+                 if log.info(f"Checking {location}: {match if match else 'no match'}") or match),
                 None
             )
+            log.info(f"Final path: {self.path}")
 
             ##### some claude ish cuz i'm too tired
             if not self.path:
