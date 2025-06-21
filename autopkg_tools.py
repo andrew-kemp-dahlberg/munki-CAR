@@ -252,7 +252,7 @@ def checkout(branch, new=True):
             checkout(branch, new=False)
         else:
             raise e
-######## END OF GIT FUNCTIONS #########
+######## END OF GIT FUNCTIONS FROM GUSTO #########
 
 def parse_recipes(recipes):
     """Define recipe paths and map onto Recipe obj for execution"""
