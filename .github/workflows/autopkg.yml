@@ -29,10 +29,10 @@ jobs:
       MUNKI_SHA256: "ba52389db369dd123297bfdf30daf37baba44bf967144382363b3b08ab5fab90"
       MUNKI_URL: "https://github.com/munki/munki/releases/download/v5.6.3/munkitools-5.6.3.4401.pkg"
     steps:
-    # - name: Checkout AutoPkg recipes
-    #   uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v3.5.3 Pin SHA1 hash instead of version
-    #   with:
-    #     fetch-depth: 1
+    - name: Checkout AutoPkg recipes
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v3.5.3 Pin SHA1 hash instead of version
+      with:
+        fetch-depth: 1
     
 
     - name: Set up Python
@@ -45,19 +45,19 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    # - name: Install Munki
-    #   run: |
-    #     curl -L ${{ env.MUNKI_URL }} --output /tmp/munkitools.pkg
-    #     echo "${{ env.MUNKI_SHA256 }} */tmp/munkitools.pkg" | shasum -c
-    #     if [[ $? != "0" ]]; then exit 1; fi
-    #     sudo installer -pkg /tmp/munkitools.pkg -target /
-
-    #####Made by Andrew Kemp-Dahlberg######
-    - name: Build Munki directories
+    - name: Install Munki
       run: |
-        mkdir -p munki/pkgs
-        mkdir -p munki/pkgsinfo
-        mkdir -p munki/icons
+        curl -L ${{ env.MUNKI_URL }} --output /tmp/munkitools.pkg
+        echo "${{ env.MUNKI_SHA256 }} */tmp/munkitools.pkg" | shasum -c
+        if [[ $? != "0" ]]; then exit 1; fi
+        sudo installer -pkg /tmp/munkitools.pkg -target /
+
+    # #####Made by Andrew Kemp-Dahlberg######
+    # - name: Build Munki directories
+    #   run: |
+    #     mkdir -p munki_repo/pkgs
+    #     mkdir -p munki_repo/pkgsinfo
+    #     mkdir -p munki_repo/icons
 
 
     - name: Install AutoPkg
@@ -67,14 +67,14 @@ jobs:
         if [[ $? != "0" ]]; then exit 1; fi
         sudo installer -pkg /tmp/autopkg.pkg -target /
 
-    # - name: Checkout your Munki LFS repo
-    #   uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
-    #   with:
-    #     repository: andrew-kemp-dahlberg/munki # Replace with your Munki repo
-    #     # GitHub deploy key with read/write access to repo
-    #     ssh-key: ${{ secrets.CPE_MUNKI_LFS_DEPLOY_KEY }}
-    #     fetch-depth: 1
-    #     path: munki_repo
+    - name: Checkout your Munki LFS repo
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+      with:
+        repository: andrew-kemp-dahlberg/munki # Replace with your Munki repo
+        # GitHub deploy key with read/write access to repo
+        ssh-key: ${{ secrets.CPE_MUNKI_LFS_DEPLOY_KEY }}
+        fetch-depth: 1
+        path: munki_repo
 
     - name: Configure AutoPkg and Git
       run: |
@@ -101,9 +101,9 @@ jobs:
         git config --global user.name "runner"
         git config --global user.email "runner@githubactions.local"
 
-    # - name: Run makecatalogs
-    #   run: |
-    #     /usr/local/munki/makecatalogs munki_repo  
+    - name: Run makecatalogs
+      run: |
+        /usr/local/munki/makecatalogs munki_repo  
 
     - name: Run AutoPkg
       run: |
