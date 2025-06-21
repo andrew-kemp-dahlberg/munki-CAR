@@ -462,6 +462,18 @@ class Recipe:
     # Added from Gusto's autopkg_tools.py for better Munki functionality
     # This is likely unnecassary for our use case, but we have left it in for now
     # _get_pkg_version_from_receipt(self, new_dl): should handle this
+    # We need to analyze this. Thoroughly
+    @property
+    def branch(self):
+        return (
+            "{}_{}".format(self.name, self.updated_version)
+            .strip()
+            .replace(" ", "")
+            .replace(")", "-")
+            .replace("(", "-")
+        )
+
+
     @property
     def updated_version(self):
         if not self.results or not self.results["imported"]:
