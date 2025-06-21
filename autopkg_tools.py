@@ -167,8 +167,8 @@ RECIPE_TO_RUN = os.environ.get("RECIPE", None)
 
 ## Added from Gusto's autopkg_tools.py for better Git/Munki functionality
 ## This needs to be double checked for compatibility with our use case
-MUNKI_REPO = os.path.join(os.getenv("GITHUB_WORKSPACE", "/tmp/"), "munki_repo")
 DEBUG = os.environ.get("DEBUG", False)
+MUNKI_REPO = os.path.join(os.getenv("GITHUB_WORKSPACE", "/tmp/"), "munki_repo")
 ## End of Gusto's autopkg_tools.py modifications ##
 
 #############################
