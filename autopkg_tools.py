@@ -462,7 +462,7 @@ class Recipe:
     # Added from Gusto's autopkg_tools.py for better Munki functionality
     # This is likely unnecassary for our use case, but we have left it in for now
     # _get_pkg_version_from_receipt(self, new_dl): should handle this
-    # We need to analyze this. Thoroughly
+    # We need to analyze this. Thoroughly test this before removing it.
     @property
     def branch(self):
         return (
