@@ -556,7 +556,45 @@ class Recipe:
 
 
 def main():
-    """Define recipes to run, write out previous cache (if exists),
+
+    '''Copied over from Gusto's autopkg_tools.py script, this is the main entry point for the script.'''
+
+
+    parser = OptionParser(description="Wrap AutoPkg with git support.")
+    parser.add_option(
+        "-l", "--list", help="Path to a plist or JSON list of recipe names."
+    )
+    parser.add_option(
+        "-g",
+        "--gitrepo",
+        help="Path to git repo. Defaults to MUNKI_REPO from Autopkg preferences.",
+        default=MUNKI_REPO,
+    )
+    parser.add_option(
+        "-d",
+        "--debug",
+        action="store_true",
+        help="Disables sending Slack alerts and adds more verbosity to output.",
+    )
+    parser.add_option(
+        "-v",
+        "--disable_verification",
+        action="store_true",
+        help="Disables recipe verification.",
+    )
+    parser.add_option(
+        "-i",
+        "--icons",
+        action="store_true",
+        help="Run iconimporter against git munki repo.",
+    )
+
+    (opts, _) = parser.parse_args()
+
+    global DEBUG
+    DEBUG = bool(DEBUG or opts.debug)
+   
+    """This is back to Kandji's. Define recipes to run, write out previous cache (if exists),
     re-export ENV vars for downstream usage, parse/iterate over recipes,
     reporting successes/failures to Slack as they occur"""
     failures = []
