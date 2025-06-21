@@ -94,8 +94,8 @@ jobs:
         # defaults write com.github.autopkg FAIL_RECIPES_WITHOUT_TRUST_INFO -bool YES
         # defaults write com.github.autopkg MUNKI_REPO "$GITHUB_WORKSPACE"/munki_repo
         
-        # Changed from "$GITHUB_WORKSPACE"/munki to refect changes to how we interact with munki
-        defaults write com.github.autopkg MUNKI_REPO $(pwd)/munki/
+        defaults write com.github.autopkg MUNKI_REPO "$GITHUB_WORKSPACE"/munki
+        # defaults write com.github.autopkg MUNKI_REPO $(pwd)/munki/
 
         defaults write com.github.autopkg GITHUB_TOKEN "${{ secrets.GITHUB_TOKEN }}"
         git config --global user.name "runner"
