@@ -53,6 +53,9 @@ from fnmatch import fnmatch
 from glob import glob
 from pathlib import Path
 from subprocess import PIPE, STDOUT, CalledProcessError, run
+#### Added from Gusto's autopkg_tools.py for git function####
+import subprocess 
+#### Eend of Gusto's autopkg_tools.py imports ####
 from datetime import datetime
 from optparse import OptionParser
 import yaml
@@ -166,6 +169,7 @@ RECIPE_TO_RUN = os.environ.get("RECIPE", None)
 ## This needs to be double checked for compatibility with our use case
 MUNKI_REPO = os.path.join(os.getenv("GITHUB_WORKSPACE", "/tmp/"), "munki_repo")
 DEBUG = os.environ.get("DEBUG", False)
+## End of Gusto's autopkg_tools.py modifications ##
 
 #############################
 ######### FUNCTIONS #########
@@ -188,8 +192,67 @@ def handle_recipe(recipe, args):
         log.info(f"SUCCESS: Downloaded {recipe.name}")
     if recipe.results.get("built"):
         log.info(f"SUCCESS: Built {recipe.name}")
+    ####### Added from Gusto's autopkg_tools.py for better Munki functionality ####
+    ####### This will be modified in the future to scale better #######
+    if recipe.results["imported"]:
+        checkout(recipe.branch)
+        for imported in recipe.results["imported"]:
+            git_run(["add", f"'pkgs/{ imported['pkg_repo_path'] }'"])
+            git_run(["add", f"'pkgsinfo/{ imported['pkginfo_path'] }'"])
+        git_run(
+            [
+                "commit",
+                "-m",
+                f"'Updated { recipe.name } to { recipe.updated_version }'",
+            ]
+        )
+        git_run(["push", "--set-upstream", "origin", recipe.branch])
+    ####### End of Gusto's autopkg_tools.py modifications ####
+
     return recipe
 
+###### GIT FUNCTIONS. THESE ARE TAKEN FROM GUSTO'S autopkg_tools.py ######
+###### These will be either modified or removed in the future ######
+###### Cloning munki repo will be a bottleneck for us ######
+def git_run(cmd):
+    cmd = ["git"] + cmd
+    hide_cmd_output = True
+
+    if DEBUG:
+        print("Running " + " ".join(cmd))
+        hide_cmd_output = False
+
+    try:
+        result = subprocess.run(
+            " ".join(cmd), shell=True, cwd=MUNKI_REPO, capture_output=hide_cmd_output
+        )
+    except subprocess.CalledProcessError as e:
+        print(e.stderr)
+        raise e
+
+
+def current_branch():
+    git_run(["rev-parse", "--abbrev-ref", "HEAD"])
+
+
+def checkout(branch, new=True):
+    if current_branch() != "main" and branch != "main":
+        checkout("main", new=False)
+
+    gitcmd = ["checkout"]
+    if new:
+        gitcmd += ["-b"]
+
+    gitcmd.append(branch)
+    # Lazy branch exists check
+    try:
+        git_run(gitcmd)
+    except subprocess.CalledProcessError as e:
+        if new:
+            checkout(branch, new=False)
+        else:
+            raise e
+######## END OF GIT FUNCTIONS #########
 
 def parse_recipes(recipes):
     """Define recipe paths and map onto Recipe obj for execution"""
@@ -394,7 +457,8 @@ class Recipe:
                     self._keys = yaml.load(f, Loader=yaml.FullLoader)
                 else:
                     self._keys = plistlib.load(f)
-    
+        return self._keys
+
     # Added from Gusto's autopkg_tools.py for better Munki functionality
     # This is likely unnecassary for our use case, but we have left it in for now
     # _get_pkg_version_from_receipt(self, new_dl): should handle this
@@ -516,6 +580,10 @@ class Recipe:
                 "run",
                 "-vvv",
                 f'"{self.path}"',
+                ### Added from Gusto's autopkg_tools.py for security. ###
+                ### Scalability of this should be considered. ###
+                "io.github.hjuutilainen.VirusTotalAnalyzer/VirusTotalAnalyzer",
+                ###########################################################
                 "--report-plist",
                 REPORT_PLIST_PATH,
             ]
@@ -566,7 +634,11 @@ def main():
             log.error(f"{e}: Skipping run of {recipe.recipe_name}! Recipe was not found.")
             slack_alert(recipe, args)
             pass
-
+        ##### Added from Gusto's autopkg_tools.py for better Munki functionality ####
+        ##### Uses args instead of options for consistency with Kandji's autopkg_tools.py #####
+        if args.icons:
+            import_icons()
+        ##### End of Gusto modifications #####
 
 ##############
 #### MAIN ####
