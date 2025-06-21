@@ -63,6 +63,42 @@ import requests
 import yaml
 
 #############################
+######### VARIABLES #########
+#############################
+#### moving from between logging and functions to top ####
+#### This addresses dependency on MUNKI_REPO for gitrepo argument ####
+
+# Define PLIST func here to populate variable below
+def _plist_pal(path):
+    """Function accepts argument of path to .plist file as `path`
+    Returns plist formatted as dict"""
+    with open(path, "rb") as f:
+        loaded_plist = plistlib.load(f)
+        return loaded_plist
+
+
+RELATIVE_DIR = Path(__file__).resolve()
+EXECUTION_DIR = Path(RELATIVE_DIR).parents[0]
+METADATA_CACHE_PATH = os.environ.get("METADATA_CACHE_PATH", "/tmp/autopkg_metadata.json")
+REPORT_PLIST_PATH = "/tmp/autopkg.plist"
+SLACK_WEBHOOK = os.environ.get("SLACK_WEBHOOK_TOKEN", None)
+ENV_RECIPES_DIR = os.environ.get("RECIPES_DIR_NAME", None)
+# Glob for AutoPkg PLIST that may have RECIPE_SEARCH_DIRS for us to read
+AUTOPKG_PLIST = glob("/Users/**/Library/Preferences/com.github.autopkg.plist")
+# If no ENV defined, set to value defined in AutoPkg plist
+RECIPES_DIR = (
+    f"/tmp/{ENV_RECIPES_DIR}" if ENV_RECIPES_DIR is not None else _plist_pal(AUTOPKG_PLIST[0]).get("RECIPE_SEARCH_DIRS")
+)
+RECIPE_TO_RUN = os.environ.get("RECIPE", None)
+
+## Added from Gusto's autopkg_tools.py for better Git/Munki functionality
+## This needs to be double checked for compatibility with our use case
+DEBUG = os.environ.get("DEBUG", False)
+MUNKI_REPO = os.path.join(os.getenv("GITHUB_WORKSPACE", "/tmp/"), "munki_repo")
+## End of Gusto's autopkg_tools.py modifications ##
+
+
+#############################
 ######### ARGUMENTS #########
 #############################
 
@@ -137,39 +173,6 @@ logging.basicConfig(
 
 log = logging.getLogger(__name__)
 
-#############################
-######### VARIABLES #########
-#############################
-
-
-# Define PLIST func here to populate variable below
-def _plist_pal(path):
-    """Function accepts argument of path to .plist file as `path`
-    Returns plist formatted as dict"""
-    with open(path, "rb") as f:
-        loaded_plist = plistlib.load(f)
-        return loaded_plist
-
-
-RELATIVE_DIR = Path(__file__).resolve()
-EXECUTION_DIR = Path(RELATIVE_DIR).parents[0]
-METADATA_CACHE_PATH = os.environ.get("METADATA_CACHE_PATH", "/tmp/autopkg_metadata.json")
-REPORT_PLIST_PATH = "/tmp/autopkg.plist"
-SLACK_WEBHOOK = os.environ.get("SLACK_WEBHOOK_TOKEN", None)
-ENV_RECIPES_DIR = os.environ.get("RECIPES_DIR_NAME", None)
-# Glob for AutoPkg PLIST that may have RECIPE_SEARCH_DIRS for us to read
-AUTOPKG_PLIST = glob("/Users/**/Library/Preferences/com.github.autopkg.plist")
-# If no ENV defined, set to value defined in AutoPkg plist
-RECIPES_DIR = (
-    f"/tmp/{ENV_RECIPES_DIR}" if ENV_RECIPES_DIR is not None else _plist_pal(AUTOPKG_PLIST[0]).get("RECIPE_SEARCH_DIRS")
-)
-RECIPE_TO_RUN = os.environ.get("RECIPE", None)
-
-## Added from Gusto's autopkg_tools.py for better Git/Munki functionality
-## This needs to be double checked for compatibility with our use case
-DEBUG = os.environ.get("DEBUG", False)
-MUNKI_REPO = os.path.join(os.getenv("GITHUB_WORKSPACE", "/tmp/"), "munki_repo")
-## End of Gusto's autopkg_tools.py modifications ##
 
 #############################
 ######### FUNCTIONS #########
