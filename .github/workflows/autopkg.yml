@@ -133,6 +133,7 @@ jobs:
       env:
         RECIPE: ${{ github.event.inputs.recipe }}
         SLACK_WEBHOOK_TOKEN: ${{ secrets.SLACK_WEBHOOK_TOKEN }}
+        DEBUG: ${{ github.event.inputs.debug }}
      
     # - name: Create Trust Info pull request
     #   if: env.TITLE
