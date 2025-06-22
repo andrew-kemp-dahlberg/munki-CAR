@@ -105,22 +105,13 @@ jobs:
       run: |
         /usr/local/munki/makecatalogs munki_repo  
     
-    #### Added by Andrew Kemp-Dahlberg ######
-    #### For debugging purposes, this will print the current working directory####
-    - name: Debug - Check initial workspace structure
-      run: |
-        echo "Current directory: $(pwd)"
-        echo "GitHub workspace: $GITHUB_WORKSPACE"
-        echo "Checking if metadata cache directory exists:"
-        ls -la ${{ github.workspace }}/codebase/helpers/ || echo "Directory does not exist"
-        echo "Checking for existing metadata cache file:"
-        ls -la ${{ github.workspace }}/codebase/helpers/metadata_cache.json || echo "File does not exist"
-    ##### End of debug step ######
+
 
     - name: Run AutoPkg
       run: |
 
         python3 codebase/autopkg_tools.py --cache -l recipe_list.json
+        #### copy metadata to repo ####
         cp /tmp/autopkg_metadata.json ${{ github.workspace }}/codebase/helpers/metadata_cache.json
         # if [ -f pull_request_title ]; then
         # echo "TITLE=$(cat pull_request_title)" >> $GITHUB_ENV
@@ -128,22 +119,10 @@ jobs:
         # cat pull_request_body >> $GITHUB_ENV
         # echo "EOF" >> $GITHUB_ENV
         # fi
-        ##### Added by Andrew Kemp-Dahlberg ######
-        ##### for debugging purposes, this will print the current working directory and the contents of the munki_repo directory #######   
-        echo "=== POST-RUN DEBUG ==="
-        echo "Checking if metadata cache was created at expected location:"
-        ls -la ${{ github.workspace }}/codebase/helpers/metadata_cache.json || echo "File not created at expected location"
-        echo "Checking /tmp for metadata file:"
-        ls -la /tmp/autopkg_metadata.json || echo "No metadata file in /tmp"
-        echo "Checking current directory for any json files:"
-        find . -name "*.json" -type f | head -20      
       env:
         RECIPE: ${{ github.event.inputs.recipe }}
         SLACK_WEBHOOK_TOKEN: ${{ secrets.SLACK_WEBHOOK_TOKEN }}
-        #### Andrew: Added variable to be used by autopkg_tools.py
-        #### This is used for caching metadata
-        METADATA_CACHE_PATH: ${{ github.workspace }}/codebase/helpers/metadata_cache.json
-
+     
     # - name: Create Trust Info pull request
     #   if: env.TITLE
     #   run: |
@@ -202,3 +181,5 @@ jobs:
           exit 1
         fi
 
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
