@@ -597,7 +597,7 @@ class Recipe:
                 f'"{self.path}"',
                 ### Added from Gusto's autopkg_tools.py for security. ###
                 ### Scalability of this should be considered. ###
-                "io.github.hjuutilainen.VirusTotalAnalyzer/VirusTotalAnalyzer",
+                # "io.github.hjuutilainen.VirusTotalAnalyzer/VirusTotalAnalyzer",
                 ###########################################################
                 "--report-plist",
                 REPORT_PLIST_PATH,
