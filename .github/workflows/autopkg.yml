@@ -157,7 +157,13 @@ jobs:
   
     - name: Update Metadata Cache
       run: |
+        #### used claude cuz i'm tired, double check this code ####
+        git config --global user.name "runner"
+        git config --global user.email "runner@githubactions.local"
+        git fetch origin
         export BRANCH_NAME=metadata-cache-`date +'%Y-%m-%d'`
+        #### end claude code ####
+        
         git checkout -b $BRANCH_NAME
         # Check if the file exists before trying to add it
         if [ -f "/tmp/autopkg_metadata.json" ]; then
