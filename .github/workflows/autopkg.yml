@@ -121,6 +121,7 @@ jobs:
       run: |
 
         python3 codebase/autopkg_tools.py --cache -l recipe_list.json
+        cp /tmp/autopkg_metadata.json ${{ github.workspace }}/codebase/helpers/metadata_cache.json
         # if [ -f pull_request_title ]; then
         # echo "TITLE=$(cat pull_request_title)" >> $GITHUB_ENV
         # echo "BODY<<EOF" >> $GITHUB_ENV
@@ -179,7 +180,6 @@ jobs:
       run: |
         export BRANCH_NAME=metadata-cache-`date +'%Y-%m-%d'`
         git checkout -b $BRANCH_NAME
-        cp /tmp/autopkg_metadata.json ${{ github.workspace }}/codebase/helpers/metadata_cache.json
         # Check if the file exists before trying to add it
         if [ -f "${{ github.workspace }}/codebase/helpers/metadata_cache.json" ]; then
           echo "metadata_cache.json found, adding to git"
