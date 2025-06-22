@@ -121,7 +121,7 @@ jobs:
     - name: Run AutoPkg
       run: |
 
-        python3 codebase/autopkg_tools.py --cache -l recipe_list.json
+        python3 codebase/autopkg_tools.py --cache --list recipe_list.json --icons
         #### copy metadata to repo ####
         
         # if [ -f pull_request_title ]; then
