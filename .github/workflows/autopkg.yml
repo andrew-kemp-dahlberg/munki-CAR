@@ -120,7 +120,7 @@ jobs:
         SLACK_WEBHOOK_TOKEN: ${{ secrets.SLACK_WEBHOOK_TOKEN }}
         #### Andrew: Added variable to be used by autopkg_tools.py
         #### This is used for caching metadata
-        METADATA_CACHE_PATH: $(pwd)/codebase/helpers/metadata_cache.json
+        METADATA_CACHE_PATH: ${{ github.workspace }}/codebase/helpers/metadata_cache.json
 
     # - name: Create Trust Info pull request
     #   if: env.TITLE
@@ -146,7 +146,7 @@ jobs:
       run: |
         export BRANCH_NAME=metadata-cache-`date +'%Y-%m-%d'`
         git checkout -b $BRANCH_NAME
-        git add codebase/helpers/metadata_cache.json
+        git add ${{ github.workspace }}/codebase/helpers/metadata_cache.json
         git commit -m "$update metadata cache"
         git push --set-upstream origin $BRANCH_NAME
         gh pr create \
