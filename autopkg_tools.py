@@ -640,7 +640,7 @@ def main():
 
     #### Added From Gusto's autopkg_tools.py for better Github Actions functionality ####
     global DEBUG
-    DEBUG = bool(DEBUG or opts.debug)
+    DEBUG = bool(DEBUG or args.debug)
     ##### End of Gusto's autopkg_tools.py modifications ####
     failures = []
 
