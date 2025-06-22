@@ -141,50 +141,48 @@ jobs:
     #        -d@-
 
 
-    ###### Added by Andrew Kemp-Dahlberg ######
+    ###### Added by Andrew Kemp-Dahlberg, built by claude. this whole thing is probably garbage and should be looked at ######
     ##### for debugging purposes, this will print the current working directory and the contents of the codebase/helpers directory #######
-    - name: Debug - Pre-commit file check
-      if: success()
-      run: |
-        echo "=== FILE SYSTEM STATE BEFORE GIT ADD ==="
-        echo "Current directory: $(pwd)"
-        echo "Contents of codebase/helpers/:"
-        ls -la codebase/helpers/ || echo "Directory does not exist"
-        echo "Searching for metadata_cache.json anywhere:"
-        find . -name "metadata_cache.json" -type f 2>/dev/null || echo "File not found anywhere"
-        echo "Checking environment variable:"
-        echo "METADATA_CACHE_PATH = $METADATA_CACHE_PATH"
-  
     - name: Update Metadata Cache
       run: |
-        #### used claude cuz i'm tired, double check this code ####
         git config --global user.name "runner"
         git config --global user.email "runner@githubactions.local"
         git fetch origin
-        export BRANCH_NAME=metadata-cache-`date +'%Y-%m-%d'`
-        #### end claude code ####
         
-        git checkout -b $BRANCH_NAME
-        # Check if the file exists before trying to add it
+        # Create a unique branch name with timestamp to avoid conflicts
+        export BRANCH_NAME=metadata-cache-$(date +'%Y-%m-%d-%H%M%S')-${{ github.run_number }}
+        
+        # Check if the metadata file exists
         if [ -f "/tmp/autopkg_metadata.json" ]; then
-          echo "metadata_cache.json found, adding to git"
+          echo "metadata_cache.json found at /tmp/autopkg_metadata.json"
+          
+          # Create branch from the latest main/master
+          git checkout -b $BRANCH_NAME origin/${{ github.ref_name }}
+          
+          # Copy the metadata file to the correct location
           cp /tmp/autopkg_metadata.json ${{ github.workspace }}/codebase/helpers/metadata_cache.json
+          
+          # Add and commit the file
           git add ${{ github.workspace }}/codebase/helpers/metadata_cache.json
-          git commit -m "Update metadata cache"
-          git push --set-upstream origin $BRANCH_NAME
+          git commit -m "Update metadata cache - $(date +'%Y-%m-%d %H:%M:%S')"
+          
+          # Push the branch
+          git push origin $BRANCH_NAME
+          
+          # Create the pull request
           gh pr create \
-            --title "Update metadata cache $(date +'%Y-%m-%d')" \
-            --body "${BODY:-Automated metadata cache update}" \
+            --title "Update metadata cache $(date +'%Y-%m-%d %H:%M:%S')" \
+            --body "Automated metadata cache update from workflow run #${{ github.run_number }}" \
             --base "${{ github.ref_name }}" \
             --head "$BRANCH_NAME" \
             --fill
-          # Auto-merge the PR
+          
+          # Auto-merge the PR if configured
           gh pr merge --auto --squash
         else
-          echo "ERROR: metadata_cache.json not found at expected location"
-          echo "Expected location: ${{ github.workspace }}/codebase/helpers/metadata_cache.json"
-          echo "Creating PR without metadata cache update"
-          # Optionally, you could create a dummy file or skip the PR entirely
+          echo "ERROR: metadata_cache.json not found at /tmp/autopkg_metadata.json"
+          echo "Contents of /tmp:"
+          ls -la /tmp/ | grep -E "(autopkg|metadata)" || echo "No autopkg-related files found"
           exit 1
         fi
       env:
