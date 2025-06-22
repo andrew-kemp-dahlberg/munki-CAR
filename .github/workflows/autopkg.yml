@@ -178,7 +178,7 @@ jobs:
             --fill
           
           # Auto-merge the PR if configured
-          gh pr merge --auto --squash
+          gh pr merge --auto --squash --delete-branch
         else
           echo "ERROR: metadata_cache.json not found at /tmp/autopkg_metadata.json"
           echo "Contents of /tmp:"
