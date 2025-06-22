@@ -202,16 +202,6 @@ Scans downloaded files for malware:
 - Automatic submission for unknown files
 - Results included in Slack notifications
 
-## Environment Variables
-
-Available for customization:
-
-- `RECIPE`: Specific recipe to run
-- `DEBUG`: Enable debug logging
-- `SLACK_WEBHOOK_TOKEN`: Slack webhook URL
-- `VIRUSTOTAL_API_KEY`: Custom VirusTotal API key
-- `METADATA_CACHE_PATH`: Custom cache location
-
 ## Troubleshooting
 
 ### Common Issues
