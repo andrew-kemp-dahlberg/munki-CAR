@@ -114,7 +114,7 @@ jobs:
         # echo "BODY<<EOF" >> $GITHUB_ENV
         # cat pull_request_body >> $GITHUB_ENV
         # echo "EOF" >> $GITHUB_ENV
-        fi
+        # fi
       env:
         RECIPE: ${{ github.event.inputs.recipe }}
         SLACK_WEBHOOK_TOKEN: ${{ secrets.SLACK_WEBHOOK_TOKEN }}
