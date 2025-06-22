@@ -128,7 +128,8 @@ parser.add_argument(
     "--debug",
     action="store_true",
     required=False,
-    default=False,
+    #### Change default from false to environment work with Github Actions better with same logic as Gusto####
+    default=os.environ.get("DEBUG", False),
     help="Disables Slack alerts and increases verbosity for logging/stdout.",
 )
 
