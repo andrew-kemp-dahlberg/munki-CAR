@@ -101,6 +101,14 @@ jobs:
         git config --global user.name "runner"
         git config --global user.email "runner@githubactions.local"
 
+        ## move metadata_cache.json to temp directory for acces from CacheRecipeMetadata.py
+        if [ -f codebase/helpers/metadata_cache.json ]; then
+          echo "Moving metadata_cache.json to /tmp for access by CacheRecipeMetadata.py"
+          mv codebase/helpers/metadata_cache.json /tmp/autopkg_metadata.json
+        else
+          echo "metadata_cache.json not found in codebase/helpers/"
+        fi
+
     - name: Run makecatalogs
       run: |
         /usr/local/munki/makecatalogs munki_repo  
