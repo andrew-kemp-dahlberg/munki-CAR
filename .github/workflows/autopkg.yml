@@ -155,9 +155,8 @@ jobs:
           --base "${{ github.ref_name }}" \
           --head "$BRANCH_NAME" \
           --fill
-      
-    # Auto-merge the PR
-    gh pr merge --auto --squash
+        # Auto-merge the PR
+        gh pr merge --auto --squash
         
 
 
