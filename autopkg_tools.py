@@ -637,6 +637,11 @@ def main():
     """Define recipes to run, write out previous cache (if exists),
     re-export ENV vars for downstream usage, parse/iterate over recipes,
     reporting successes/failures to Slack as they occur"""
+
+    #### Added From Gusto's autopkg_tools.py for better Github Actions functionality ####
+    global DEBUG
+    DEBUG = bool(DEBUG or opts.debug)
+    ##### End of Gusto's autopkg_tools.py modifications ####
     failures = []
 
     recipes = RECIPE_TO_RUN.split(", ") if RECIPE_TO_RUN else args.list if args.list else None
