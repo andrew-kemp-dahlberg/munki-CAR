@@ -112,7 +112,7 @@ jobs:
 
         python3 codebase/autopkg_tools.py --cache -l recipe_list.json
         #### copy metadata to repo ####
-        cp /tmp/autopkg_metadata.json ${{ github.workspace }}/codebase/helpers/metadata_cache.json
+        
         # if [ -f pull_request_title ]; then
         # echo "TITLE=$(cat pull_request_title)" >> $GITHUB_ENV
         # echo "BODY<<EOF" >> $GITHUB_ENV
@@ -160,8 +160,9 @@ jobs:
         export BRANCH_NAME=metadata-cache-`date +'%Y-%m-%d'`
         git checkout -b $BRANCH_NAME
         # Check if the file exists before trying to add it
-        if [ -f "${{ github.workspace }}/codebase/helpers/metadata_cache.json" ]; then
+        if [ -f "/tmp/autopkg_metadata.json" ]; then
           echo "metadata_cache.json found, adding to git"
+          cp /tmp/autopkg_metadata.json ${{ github.workspace }}/codebase/helpers/metadata_cache.json
           git add ${{ github.workspace }}/codebase/helpers/metadata_cache.json
           git commit -m "Update metadata cache"
           git push --set-upstream origin $BRANCH_NAME
@@ -180,6 +181,5 @@ jobs:
           # Optionally, you could create a dummy file or skip the PR entirely
           exit 1
         fi
-
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
