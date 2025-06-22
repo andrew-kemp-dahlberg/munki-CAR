@@ -595,13 +595,12 @@ class Recipe:
                 "run",
                 "-vvv",
                 f'"{self.path}"',
-                ### Added from Gusto's autopkg_tools.py for security. ###
-                ### Scalability of this should be considered. ###
-                # "io.github.hjuutilainen.VirusTotalAnalyzer/VirusTotalAnalyzer",
-                ###########################################################
                 "--report-plist",
                 REPORT_PLIST_PATH,
             ]
+
+            ### Added from Gusto's autopkg_tools.py except they do it in cmd  ###
+            cmd.extend(["--post", "io.github.hjuutilainen.VirusTotalAnalyzer/VirusTotalAnalyzer"])
             if args.cache:
                 cmd.extend(["--post", "io.kandji.cachedata/CacheRecipeMetadata"])
             # Concatenate our commands and run with subprocess
