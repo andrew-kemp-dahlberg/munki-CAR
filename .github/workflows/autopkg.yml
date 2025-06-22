@@ -138,3 +138,26 @@ jobs:
     #        --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
     #        --header 'content-type: application/json' \
     #        -d@-
+
+
+    ###### Added by Andrew Kemp-Dahlberg ######
+  
+    - name: Update Metadata Cache
+      run: |
+        export BRANCH_NAME=metadata-cache-`date +'%Y-%m-%d'`
+        git checkout -b $BRANCH_NAME
+        git add codebase/helpers/metadata_cache.json
+        git commit -m "$update metadata cache"
+        git push --set-upstream origin $BRANCH_NAME
+        gh pr create \
+          --title "update metadata cache $(date +'%Y-%m-%d')" \
+          --body "${BODY:-Automated metadata cache update}" \
+          --base "${{ github.ref_name }}" \
+          --head "$BRANCH_NAME" \
+          --fill
+      
+    # Auto-merge the PR
+    gh pr merge --auto --squash
+        
+
+
