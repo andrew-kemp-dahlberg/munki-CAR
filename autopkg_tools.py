@@ -143,6 +143,13 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "-v",
+    "--disable_verification",
+    action="store_true",
+    help="Disables recipe verification.",
+)
+
+parser.add_argument(
     "-i",
     "--icons",
     action="store_true",
@@ -660,11 +667,19 @@ def main():
             log.error(f"{e}: Skipping run of {recipe.recipe_name}! Recipe was not found.")
             slack_alert(recipe, args)
             pass
-        ##### Added from Gusto's autopkg_tools.py for better Munki functionality ####
-        ##### Uses args instead of options for consistency with Kandji's autopkg_tools.py #####
-        if args.icons:
-            import_icons()
-        ##### End of Gusto modifications #####
+    ##### Added from Gusto's autopkg_tools.py for better Munki functionality ####
+    ##### Uses args instead of options for consistency with Kandji's autopkg_tools.py #####
+    if not args.disable_verification:
+    if failures:
+        title = " ".join([f"{recipe.name}" for recipe in failures])
+        lines = [f"{recipe.results['message']}\n" for recipe in failures]
+        with open("pull_request_title", "a+") as title_file:
+            title_file.write(f"Update trust for {title}")
+        with open("pull_request_body", "a+") as body_file:
+            body_file.writelines(lines)
+    if args.icons:
+        import_icons()
+    ##### End of Gusto modifications #####
 
 ##############
 #### MAIN ####
