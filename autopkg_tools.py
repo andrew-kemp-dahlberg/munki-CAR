@@ -143,13 +143,6 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "-v",
-    "--disable_verification",
-    action="store_true",
-    help="Disables recipe verification.",
-)
-
-parser.add_argument(
     "-i",
     "--icons",
     action="store_true",
@@ -669,7 +662,6 @@ def main():
             pass
     ##### Added from Gusto's autopkg_tools.py for better Munki functionality ####
     ##### Uses args instead of options for consistency with Kandji's autopkg_tools.py #####
-    if not args.disable_verification:
     if failures:
         title = " ".join([f"{recipe.name}" for recipe in failures])
         lines = [f"{recipe.results['message']}\n" for recipe in failures]
