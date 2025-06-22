@@ -389,6 +389,18 @@ def _eval_recipe_results(recipe):
     return task_title, task_description
 
 
+## Icon handling
+def import_icons():
+    branch_name = "icon_import_{}".format(datetime.now().strftime("%Y-%m-%d"))
+    checkout(branch_name)
+    result = subprocess.check_call(
+        "/usr/local/munki/iconimporter munki_repo", shell=True
+    )
+    git_run(["add", "icons/"])
+    git_run(["commit", "-m", "Added new icons"])
+    git_run(["push", "--set-upstream", "origin", f"{branch_name}"])
+
+
 def slack_alert(recipe, args):
     """Message to Slack channel specified in SLACK_WEBHOOK with recipe run results"""
     # Skip Slack if debug enabled
