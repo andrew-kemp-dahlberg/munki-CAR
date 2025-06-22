@@ -373,8 +373,15 @@ def _eval_recipe_results(recipe):
     elif recipe.success:
         last_build = recipe.results["built"][-1].get("pkg_path")
         last_vers = recipe.results["built"][-1].get("version")
+        #### Added from Gusto's autopkg_tools.py for better Munki functionality ####
+        #### Changed from task_description to last_build to ensure all imports are tracked ####
+        last_build += (
+            "*Catalogs:* %s \n" % recipe.results["imported"][0]["catalogs"]
+            + "*Package Path:* `%s` \n" % recipe.results["imported"][0]["pkg_repo_path"]
+            + "*Pkginfo Path:* `%s` \n" % recipe.results["imported"][0]["pkginfo_path"]
+        )
         ####### Added from Gusto's autopkg_tools.py for better Munki functionality ####
-        
+        #### End of Gusto's autopkg_tools.py modifications ####
         if not last_vers:
             # Find a version number from our new PKG build
             out = re.search(r"([0-9](.*)[0-9])", last_build)
@@ -388,13 +395,8 @@ def _eval_recipe_results(recipe):
         all_builds = "\n".join([x.get("pkg_path") for x in recipe.results["built"] if x.get("pkg_path")])
         task_title = f"SUCCESS: Recipe {recipe.name} packaged new version {version}"
         task_description = f"*Build Path(s):*\n {all_builds}\n"
-        #### Added from Gusto's autopkg_tools.py for better Munki functionality ####
-        task_description += (
-            "*Catalogs:* %s \n" % recipe.results["imported"][0]["catalogs"]
-            + "*Package Path:* `%s` \n" % recipe.results["imported"][0]["pkg_repo_path"]
-            + "*Pkginfo Path:* `%s` \n" % recipe.results["imported"][0]["pkginfo_path"]
-        )
-        #### End of Gusto's autopkg_tools.py modifications ####
+
+ 
     return task_title, task_description
 
 
