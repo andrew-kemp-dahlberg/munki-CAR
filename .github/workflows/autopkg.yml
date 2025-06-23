@@ -151,7 +151,6 @@ jobs:
       if: always()  # Always run this step
       continue-on-error: true  # Don't fail the workflow if this step fails
       run: |
-        # Check if metadata was generated
         if [ ! -f "/tmp/autopkg_metadata.json" ]; then
           echo "::notice::No metadata file generated, skipping commit"
           exit 0
@@ -176,18 +175,18 @@ jobs:
         git stash push -m "Temporary stash for metadata update" || true
         
         # Fetch and reset to latest remote state
-        git fetch origin ${{ github.ref_name }}
-        git reset --hard origin/${{ github.ref_name }}
+        git fetch origin main
+        git reset --hard origin/main
         
         # Apply our metadata change
         cp /tmp/autopkg_metadata.json codebase/helpers/metadata_cache.json
         git add codebase/helpers/metadata_cache.json
-        git commit -m "Update metadata cache from workflow run #${{ github.run_number }}"
+        git commit -m "Update metadata cache from workflow run #90"
         
         # Push with retry logic
         PUSH_SUCCESS=false
         for i in {1..5}; do
-          if git push origin HEAD:${{ github.ref_name }}; then
+          if git push origin HEAD:main; then
             echo "::notice::Successfully pushed metadata cache update on attempt $i"
             PUSH_SUCCESS=true
             break
@@ -195,14 +194,14 @@ jobs:
             echo "::warning::Push attempt $i failed"
             if [ $i -lt 5 ]; then
               echo "Fetching latest and retrying..."
-              git fetch origin ${{ github.ref_name }}
-              git rebase origin/${{ github.ref_name }} || {
+              git fetch origin main
+              git rebase origin/main || {
                 echo "::warning::Rebase failed, resetting and reapplying change"
                 git rebase --abort 2>/dev/null || true
-                git reset --hard origin/${{ github.ref_name }}
+                git reset --hard origin/main
                 cp /tmp/autopkg_metadata.json codebase/helpers/metadata_cache.json
                 git add codebase/helpers/metadata_cache.json
-                git commit -m "Update metadata cache from workflow run #${{ github.run_number }}"
+                git commit -m "Update metadata cache from workflow run #90"
               }
               sleep 2
             fi
