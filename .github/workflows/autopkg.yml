@@ -108,6 +108,7 @@ jobs:
           mv codebase/helpers/metadata_cache.json /tmp/autopkg_metadata.json
         else
           echo "metadata_cache.json not found in codebase/helpers/"
+          touch /tmp/autopkg_metadata.json
         fi
 
     - name: Run makecatalogs
