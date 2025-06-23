@@ -3,7 +3,9 @@ name: Autopromote
 on:
   schedule:
     - cron:  '30 16 * * *'
+   ####  strictly for testing purposes ### 
   workflow_dispatch: # manually triggered   
+  ##### ##############################  
 jobs:
   autopromote:
     runs-on: ubuntu-latest
