@@ -624,7 +624,7 @@ class Recipe:
                 REPORT_PLIST_PATH,
             ]
             ### Added by Andrew to properly check if items are new downloads or sparse files ###
-            if os.path.exists(METADATA_CACHE_PATH) :
+            if not os.path.exists(METADATA_CACHE_PATH) :
             ### End of Andrew's modifications to autopkg_tools.py ###          
             ### Added from Gusto's autopkg_tools.py except they do it in cmd  ###
                 cmd.extend(["--post", "io.github.hjuutilainen.VirusTotalAnalyzer/VirusTotalAnalyzer"])
