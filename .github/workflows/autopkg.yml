@@ -100,7 +100,7 @@ jobs:
         git config --global user.email "runner@githubactions.local"
 
 #### By andrew. It may be cleaner to edit this directly in CacheRecipeMetadata.py ####
-    - name: Move metadata cache to temp directory
+    - name: Copy metadata cache to temp directory
       run: |
         ## move metadata_cache.json to temp directory for acces from CacheRecipeMetadata.py
         if [ -f codebase/helpers/metadata_cache.json ]; then
@@ -120,14 +120,6 @@ jobs:
       run: |
 
         python3 codebase/autopkg_tools.py --cache --list recipe_list.json --icons
-        #### copy metadata to repo ####
-        
-        # if [ -f pull_request_title ]; then
-        # echo "TITLE=$(cat pull_request_title)" >> $GITHUB_ENV
-        # echo "BODY<<EOF" >> $GITHUB_ENV
-        # cat pull_request_body >> $GITHUB_ENV
-        # echo "EOF" >> $GITHUB_ENV
-        # fi
       env:
         RECIPE: ${{ github.event.inputs.recipe }}
         SLACK_WEBHOOK_TOKEN: ${{ secrets.SLACK_WEBHOOK_TOKEN }}
@@ -153,47 +145,59 @@ jobs:
 
     ###### Added by Andrew Kemp-Dahlberg, built by claude. this whole thing is probably garbage and should be looked at ######
     ##### for debugging purposes, this will print the current working directory and the contents of the codebase/helpers directory #######
-    - name: Update Metadata Cache
+    - name: Check if metadata was generated
+      id: check_metadata
       run: |
-        git config --global user.name "runner"
-        git config --global user.email "runner@githubactions.local"
-        git fetch origin
-        
-        # Create a unique branch name with timestamp to avoid conflicts
-        export BRANCH_NAME=metadata-cache-$(date +'%Y-%m-%d-%H%M%S')-${{ github.run_number }}
-        
-        # Check if the metadata file exists
         if [ -f "/tmp/autopkg_metadata.json" ]; then
-          echo "metadata_cache.json found at /tmp/autopkg_metadata.json"
-          
-          # Create branch from the latest main/master
-          git checkout -b $BRANCH_NAME origin/${{ github.ref_name }}
-          
-          # Copy the metadata file to the correct location
-          cp /tmp/autopkg_metadata.json ${{ github.workspace }}/codebase/helpers/metadata_cache.json
-          
-          # Add and commit the file
-          git add ${{ github.workspace }}/codebase/helpers/metadata_cache.json
-          git commit -m "Update metadata cache - $(date +'%Y-%m-%d %H:%M:%S')"
-          
-          # Push the branch
-          git push origin $BRANCH_NAME
-          
-          # Create the pull request
-          gh pr create \
-            --title "Update metadata cache $(date +'%Y-%m-%d %H:%M:%S')" \
-            --body "Automated metadata cache update from workflow run #${{ github.run_number }}" \
-            --base "${{ github.ref_name }}" \
-            --head "$BRANCH_NAME" \
-            --fill
-          
-          # Auto-merge the PR if configured
-          gh pr merge --auto --squash --delete-branch
+          echo "metadata_exists=true" >> $GITHUB_OUTPUT
+          echo "Metadata file size: $(stat -f%z /tmp/autopkg_metadata.json) bytes"
         else
-          echo "ERROR: metadata_cache.json not found at /tmp/autopkg_metadata.json"
-          echo "Contents of /tmp:"
-          ls -la /tmp/ | grep -E "(autopkg|metadata)" || echo "No autopkg-related files found"
-          exit 1
+          echo "metadata_exists=false" >> $GITHUB_OUTPUT
+          echo "No metadata file generated"
         fi
+    
+    - name: Commit and push metadata cache
+      if: steps.check_metadata.outputs.metadata_exists == 'true'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # Use the enhanced script from above
+        bash scripts/commit_metadata_cache.sh
+    
+    - name: Handle commit failure
+      if: failure() && steps.check_metadata.outputs.metadata_exists == 'true'
+      run: |
+        echo "::warning::Failed to commit metadata cache"
+        echo "Attempting to save as artifact instead..."
+    
+    - name: Upload metadata as artifact (fallback)
+      if: failure() && steps.check_metadata.outputs.metadata_exists == 'true'
+      uses: actions/upload-artifact@v3
+      with:
+        name: metadata-cache-${{ github.run_number }}
+        path: /tmp/autopkg_metadata.json
+        retention-days: 7
+    
+    - name: Notify on complete failure
+      if: failure()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          // Create an issue if the workflow fails completely
+          const title = `Metadata Cache Update Failed - Run #${context.runNumber}`;
+          const body = `The automated metadata cache update failed.
+          
+          **Details:**
+          - Workflow Run: [#${context.runNumber}](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
+          - Time: ${new Date().toISOString()}
+          - Actor: ${context.actor}
+          
+          Please check the workflow logs for details.`;
+          
+          await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: title,
+            body: body,
+            labels: ['bug', 'automation']
+          });

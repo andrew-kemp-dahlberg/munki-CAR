@@ -313,10 +313,7 @@ def create_file_and_attributes(attributes_dict):
             etag = dl_md.get("etag")
             last_modified = dl_md.get("last_modified")
             dl_size_in_bytes = dl_md.get("dl_size_in_bytes")
-            ### Added by Andrew to handle skipping cached files in VirusTotalAnalyzer ###
-            cached_file = "cached_file"
-            ### End of Andrew's modifications ###
-
+        
             try:
                 cache_path, cache_filename = os.path.split(pathname)
                 log.debug(f"Found previous cache path {cache_path}")
@@ -346,12 +343,6 @@ def create_file_and_attributes(attributes_dict):
                     f"xattr -w com.github.autopkg.last-modified '{last_modified}' '{pathname}'"
                 ) if last_modified else log.info(f"Skipping write of attribute 'last_modified' for {i}; key is missing")
                 log.info(f"Wrote file with xattrs and byte size {dl_size_in_bytes} to {pathname}")
-                
-                ### Added by Andrew to handle skipping cached files in VirusTotalAnalyzer ###
-                _run_command(f"xattr -w com.github.autopkg.etag '{cached_file}' '{pathname}'") if etag else log.info(
-                    f"Skipping write of attribute 'etag' for {i}; key is missing"
-                )
-                ### End of Andrew's modifications ###
 
             # Will hit this exception if "pathname" is NoneType when we try to split it
             except TypeError as e:
@@ -633,9 +624,12 @@ class Recipe:
                 REPORT_PLIST_PATH,
             ]
             ### Added by Andrew to properly check if items are new downloads or sparse files ###
-            # if 
-            # ### Added from Gusto's autopkg_tools.py except they do it in cmd  ###
-            #     cmd.extend(["--post", "io.github.hjuutilainen.VirusTotalAnalyzer/VirusTotalAnalyzer"])
+            if os.path.exists(METADATA_CACHE_PATH) :
+            ### End of Andrew's modifications to autopkg_tools.py ###          
+            ### Added from Gusto's autopkg_tools.py except they do it in cmd  ###
+                cmd.extend(["--post", "io.github.hjuutilainen.VirusTotalAnalyzer/VirusTotalAnalyzer"])
+            #### End of Gusto's autopkg_tools.py modifications although virus analyzer functionality should be investigated potentially as CI####
+
             if args.cache:
                 cmd.extend(["--post", "io.kandji.cachedata/CacheRecipeMetadata"])
             # Concatenate our commands and run with subprocess
