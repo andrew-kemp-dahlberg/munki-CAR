@@ -1,4 +1,5 @@
 [
   "Ghostty.munki.recipe.yaml",
-  "VisualStudioCode.munki.recipe"
+  "VisualStudioCode.munki.recipe",
+  "iMazing.munki.recipe"
 ]
