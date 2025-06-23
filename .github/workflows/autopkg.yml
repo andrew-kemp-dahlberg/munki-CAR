@@ -145,59 +145,70 @@ jobs:
 
     ###### Added by Andrew Kemp-Dahlberg, built by claude. this whole thing is probably garbage and should be looked at ######
     ##### for debugging purposes, this will print the current working directory and the contents of the codebase/helpers directory #######
-    - name: Check if metadata was generated
-      id: check_metadata
-      run: |
-        if [ -f "/tmp/autopkg_metadata.json" ]; then
-          echo "metadata_exists=true" >> $GITHUB_OUTPUT
-          echo "Metadata file size: $(stat -f%z /tmp/autopkg_metadata.json) bytes"
-        else
-          echo "metadata_exists=false" >> $GITHUB_OUTPUT
-          echo "No metadata file generated"
-        fi
-    
+        ###### Simplified metadata cache handling ######
     - name: Commit and push metadata cache
-      if: steps.check_metadata.outputs.metadata_exists == 'true'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      if: always()  # Always run this step
+      continue-on-error: true  # Don't fail the workflow if this step fails
       run: |
-        # Use the enhanced script from above
-        bash scripts/commit_metadata_cache.sh
-    
-    - name: Handle commit failure
-      if: failure() && steps.check_metadata.outputs.metadata_exists == 'true'
-      run: |
-        echo "::warning::Failed to commit metadata cache"
-        echo "Attempting to save as artifact instead..."
-    
-    - name: Upload metadata as artifact (fallback)
-      if: failure() && steps.check_metadata.outputs.metadata_exists == 'true'
-      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 #v4.6.2
-      with:
-        name: metadata-cache-${{ github.run_number }}
-        path: /tmp/autopkg_metadata.json
-        retention-days: 7
-    
-    - name: Notify on complete failure
-      if: failure()
-      uses: actions/github-script@v6
-      with:
-        script: |
-          // Create an issue if the workflow fails completely
-          const title = `Metadata Cache Update Failed - Run #${context.runNumber}`;
-          const body = `The automated metadata cache update failed.
-          
-          **Details:**
-          - Workflow Run: [#${context.runNumber}](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
-          - Time: ${new Date().toISOString()}
-          - Actor: ${context.actor}
-          
-          Please check the workflow logs for details.`;
-          
-          await github.rest.issues.create({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            title: title,
-            body: body,
-            labels: ['bug', 'automation']
-          });
+        # Check if metadata was generated
+        if [ ! -f "/tmp/autopkg_metadata.json" ]; then
+          echo "::notice::No metadata file generated, skipping commit"
+          exit 0
+        fi
+        
+        echo "Metadata file found, size: $(stat -f%z /tmp/autopkg_metadata.json) bytes"
+        
+        # Copy metadata back to the repository
+        cp /tmp/autopkg_metadata.json codebase/helpers/metadata_cache.json
+        
+        # Configure git
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        
+        # Check if there are any changes
+        if git diff --quiet codebase/helpers/metadata_cache.json; then
+          echo "::notice::No changes to metadata cache, skipping commit"
+          exit 0
+        fi
+        
+        # Stash any other changes to avoid conflicts
+        git stash push -m "Temporary stash for metadata update" || true
+        
+        # Fetch and reset to latest remote state
+        git fetch origin ${{ github.ref_name }}
+        git reset --hard origin/${{ github.ref_name }}
+        
+        # Apply our metadata change
+        cp /tmp/autopkg_metadata.json codebase/helpers/metadata_cache.json
+        git add codebase/helpers/metadata_cache.json
+        git commit -m "Update metadata cache from workflow run #${{ github.run_number }}"
+        
+        # Push with retry logic
+        PUSH_SUCCESS=false
+        for i in {1..5}; do
+          if git push origin HEAD:${{ github.ref_name }}; then
+            echo "::notice::Successfully pushed metadata cache update on attempt $i"
+            PUSH_SUCCESS=true
+            break
+          else
+            echo "::warning::Push attempt $i failed"
+            if [ $i -lt 5 ]; then
+              echo "Fetching latest and retrying..."
+              git fetch origin ${{ github.ref_name }}
+              git rebase origin/${{ github.ref_name }} || {
+                echo "::warning::Rebase failed, resetting and reapplying change"
+                git rebase --abort 2>/dev/null || true
+                git reset --hard origin/${{ github.ref_name }}
+                cp /tmp/autopkg_metadata.json codebase/helpers/metadata_cache.json
+                git add codebase/helpers/metadata_cache.json
+                git commit -m "Update metadata cache from workflow run #${{ github.run_number }}"
+              }
+              sleep 2
+            fi
+          fi
+        done
+        
+        if [ "$PUSH_SUCCESS" = false ]; then
+          echo "::error::Failed to push metadata cache after 5 attempts"
+          echo "::warning::Metadata updates were not saved to the repository"
+        fi
