@@ -144,6 +144,7 @@ jobs:
 
 
     ###### Added by Andrew Kemp-Dahlberg, built by claude. this whole thing is probably garbage and should be looked at ######
+    ###### But it works for now, so I'm leaving it in since i'm tired ######
     ##### for debugging purposes, this will print the current working directory and the contents of the codebase/helpers directory #######
         ###### Simplified metadata cache handling ######
     - name: Commit and push metadata cache
