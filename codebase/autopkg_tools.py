@@ -623,13 +623,16 @@ class Recipe:
                 "--report-plist",
                 REPORT_PLIST_PATH,
             ]
+            
             ### Added by Andrew to properly check if items are new downloads or sparse files ###
             if not os.path.exists(METADATA_CACHE_PATH) :
                 log.info("METADATA_CACHE_PATH does not exist, using VirusTotalAnalyzer post processor")
-            ### End of Andrew's modifications to autopkg_tools.py ###          
-            ### Added from Gusto's autopkg_tools.py except they do it in cmd  ###
+                ### End of Andrew's modifications to autopkg_tools.py ###          
+                ### Added from Gusto's autopkg_tools.py except they do it in cmd  ###
                 cmd.extend(["--post", "io.github.hjuutilainen.VirusTotalAnalyzer/VirusTotalAnalyzer"])
-            #### End of Gusto's autopkg_tools.py modifications although virus analyzer functionality should be investigated potentially as CI####
+                #### End of Gusto's autopkg_tools.py modifications although virus analyzer functionality should be investigated potentially as CI####
+
+
 
             if args.cache:
                 cmd.extend(["--post", "io.kandji.cachedata/CacheRecipeMetadata"])
