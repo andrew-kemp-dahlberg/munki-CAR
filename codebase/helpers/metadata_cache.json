@@ -1,6 +1,6 @@
 {
     "Ghostty.munki.recipe.yaml": {
-        "cache_timestamp": "2025-06-27 03:32:30.558364",
+        "cache_timestamp": "2025-06-27 03:36:35.412726",
         "download_metadata": [
             {
                 "url": "https://release.files.ghostty.org/1.1.3/Ghostty.dmg",
@@ -12,7 +12,7 @@
         ]
     },
     "VisualStudioCode.munki.recipe": {
-        "cache_timestamp": "2025-06-27 03:33:53.640045",
+        "cache_timestamp": "2025-06-27 03:38:09.002881",
         "download_metadata": [
             {
                 "url": "https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal",
@@ -24,7 +24,7 @@
         ]
     },
     "iMazing.munki.recipe": {
-        "cache_timestamp": "2025-06-27 03:34:30.099807",
+        "cache_timestamp": "2025-06-27 03:38:40.335565",
         "download_metadata": [
             {
                 "url": "https://downloads.imazing.com/mac/iMazing/2.18.1.17725/iMazing_2.18.1.17725.dmg",
