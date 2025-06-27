@@ -144,9 +144,8 @@ jobs:
 
 
     ###### Added by Andrew Kemp-Dahlberg, built by claude. this whole thing is probably garbage and should be looked at ######
-    ###### But it works for now, so I'm leaving it in since i'm tired ######
-    ##### for debugging purposes, this will print the current working directory and the contents of the codebase/helpers directory #######
-        ###### Simplified metadata cache handling ######
+    
+        
     - name: Commit and push metadata cache
       if: always()  # Always run this step
       continue-on-error: true  # Don't fail the workflow if this step fails
@@ -165,23 +164,15 @@ jobs:
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
         
-        # Check if there are any changes
-        if git diff --quiet codebase/helpers/metadata_cache.json; then
+        # Check if there are any changes (including untracked files)
+        git add codebase/helpers/metadata_cache.json
+        if git diff --cached --quiet; then
           echo "::notice::No changes to metadata cache, skipping commit"
           exit 0
         fi
         
-        # Stash any other changes to avoid conflicts
-        git stash push -m "Temporary stash for metadata update" || true
-        
-        # Fetch and reset to latest remote state
-        git fetch origin main
-        git reset --hard origin/main
-        
-        # Apply our metadata change
-        cp /tmp/autopkg_metadata.json codebase/helpers/metadata_cache.json
-        git add codebase/helpers/metadata_cache.json
-        git commit -m "Update metadata cache from workflow run #90"
+        # Commit the changes
+        git commit -m "Update metadata cache from workflow run #${{ github.run_number }}"
         
         # Push with retry logic
         PUSH_SUCCESS=false
@@ -201,7 +192,7 @@ jobs:
                 git reset --hard origin/main
                 cp /tmp/autopkg_metadata.json codebase/helpers/metadata_cache.json
                 git add codebase/helpers/metadata_cache.json
-                git commit -m "Update metadata cache from workflow run #90"
+                git commit -m "Update metadata cache from workflow run #${{ github.run_number }}"
               }
               sleep 2
             fi
