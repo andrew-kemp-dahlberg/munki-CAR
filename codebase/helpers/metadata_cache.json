@@ -1,0 +1,38 @@
+{
+    "Ghostty.munki.recipe.yaml": {
+        "cache_timestamp": "2025-06-27 03:32:30.558364",
+        "download_metadata": [
+            {
+                "url": "https://release.files.ghostty.org/1.1.3/Ghostty.dmg",
+                "pathname": "/Users/runner/Library/AutoPkg/Cache/com.github.autopkg.wardsparadox.munki.Ghostty/downloads/Ghostty.dmg",
+                "etag": "\"8dc9fbee98419d14d7708c6269d4cb5a\"",
+                "last_modified": "Mon, 24 Mar 2025 14:16:59 GMT",
+                "dl_size_in_bytes": "28584491"
+            }
+        ]
+    },
+    "VisualStudioCode.munki.recipe": {
+        "cache_timestamp": "2025-06-27 03:33:53.640045",
+        "download_metadata": [
+            {
+                "url": "https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal",
+                "pathname": "/Users/runner/Library/AutoPkg/Cache/com.github.valdore86.munki.visualstudiocode/downloads/vscode.zip",
+                "etag": "\"0xAC23F1C38200E9E5814D9321D1A17F7449880DD466445B4C7995B4A220759A95\"",
+                "last_modified": "Tue, 24 Jun 2025 22:47:41 GMT",
+                "dl_size_in_bytes": "247922083"
+            }
+        ]
+    },
+    "iMazing.munki.recipe": {
+        "cache_timestamp": "2025-06-27 03:34:30.099807",
+        "download_metadata": [
+            {
+                "url": "https://downloads.imazing.com/mac/iMazing/2.18.1.17725/iMazing_2.18.1.17725.dmg",
+                "pathname": "/Users/runner/Library/AutoPkg/Cache/com.github.homebysix.munki.iMazing/downloads/iMazing-2.18.1.dmg",
+                "etag": "\"c5c4ef9abd67cf4ce8dc58fd42d62d52\"",
+                "last_modified": "Tue, 01 Oct 2024 09:59:54 GMT",
+                "dl_size_in_bytes": "268164925"
+            }
+        ]
+    }
+}
