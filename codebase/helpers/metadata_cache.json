@@ -12,14 +12,14 @@
         ]
     },
     "VisualStudioCode.munki.recipe": {
-        "cache_timestamp": "2025-09-18 14:22:30.556593",
+        "cache_timestamp": "2025-09-26 14:21:13.756053",
         "download_metadata": [
             {
                 "url": "https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal",
                 "pathname": "/Users/runner/Library/AutoPkg/Cache/com.github.valdore86.munki.visualstudiocode/downloads/vscode.zip",
-                "etag": "\"0x4E06F2A5A5D1F70617D7DB9D1EB13FD286774935B9577A4821EC745E03542185\"",
-                "last_modified": "Thu, 18 Sep 2025 00:35:41 GMT",
-                "dl_size_in_bytes": "260655697"
+                "etag": "\"0x63EA8AAECE874CBDBBEE1A7F6A6338BB60C2142303F259D7E4AD2545DA85D32C\"",
+                "last_modified": "Wed, 24 Sep 2025 12:18:10 GMT",
+                "dl_size_in_bytes": "260656379"
             }
         ]
     },
