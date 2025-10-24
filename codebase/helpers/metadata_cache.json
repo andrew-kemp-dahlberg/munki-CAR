@@ -1,13 +1,13 @@
 {
     "Ghostty.munki.recipe.yaml": {
-        "cache_timestamp": "2025-10-09 14:22:29.611834",
+        "cache_timestamp": "2025-10-24 14:23:12.562829",
         "download_metadata": [
             {
-                "url": "https://release.files.ghostty.org/1.2.2/Ghostty.dmg",
+                "url": "https://release.files.ghostty.org/1.2.3/Ghostty.dmg",
                 "pathname": "/Users/runner/Library/AutoPkg/Cache/com.github.autopkg.wardsparadox.munki.Ghostty/downloads/Ghostty.dmg",
-                "etag": "\"4921e0da5ee92ebe22afb7b6f2e73d40\"",
-                "last_modified": "Wed, 08 Oct 2025 18:36:03 GMT",
-                "dl_size_in_bytes": "26783198"
+                "etag": "\"f657ce358079bf025a20e2898cde82a2\"",
+                "last_modified": "Thu, 23 Oct 2025 17:42:47 GMT",
+                "dl_size_in_bytes": "26820641"
             }
         ]
     },
