@@ -1,4 +1,4 @@
-# Munki-CAR
+# AutopkgRunner
 
 A GitHub Actions-based automation system for running AutoPkg recipes and managing Munki repositories. This project provides automated package building, virus scanning, and intelligent promotion of packages through testing catalogs.
 
